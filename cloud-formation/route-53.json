@@ -1,40 +1,32 @@
 {
+  "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "azcardio" : {
-      "Type": "AWS::Route53::RecordSetGroup",
-      "Properties": {
-        "HostedZoneName": "azcard.io",
-        "RecordSets": [
+    "GSuiteRecords" : {
+      "Type" : "AWS::Route53::RecordSetGroup",
+      "Properties" : {
+        "HostedZoneName" : "azcard.io.",
+        "Comment" : "Required for GSuite email forwarding",
+        "RecordSets" : [
           {
-            "Type": "AWS::Route53::RecordSet",
-            "Properties": {
-              "Comment": "Required for GSuite email forwarding",
-              "HostedZoneName": "azcard.io",
-              "Name": "azcard.io.",
-              "ResourceRecords": [
-                "5 alt1.aspmx.l.google.com",
-                "5 alt2.aspmx.l.google.com",
-                "1 aspmx.l.google.com",
-                "10 aspmx2.googlemail.com",
-                "10 aspmx3.googlemail.com"
-              ],
-              "TTL": "3600",
-              "Type": "MX"
-            }
+            "Name" : "azcard.io",
+            "Type" : "MX",
+            "TTL" : "3600",
+            "ResourceRecords" : [
+              "5 alt1.aspmx.l.google.com",
+              "5 alt2.aspmx.l.google.com",
+              "1 aspmx.l.google.com",
+              "10 aspmx2.googlemail.com",
+              "10 aspmx3.googlemail.com"
+            ]
           },
           {
-            "Type": "AWS::Route53::RecordSet",
-            "Properties": {
-              "Comment": "Required for GSuite email forwarding",
-              "HostedZoneName": "azcard.io",
-              "Name": "azcard.io.",
-              "ResourceRecords": [
-                "v=spf1 include:_spf.google.com ~all",
-                "google-site-verification=tqvZxD_s-3IRsXbbHSf9yDATOlxTdXiCr9yE9dWZum4"
-              ],
-              "TTL": "3600",
-              "Type": "TXT"
-            }
+            "Name": "azcard.io",
+            "Type": "TXT",
+            "TTL": "3600",
+            "ResourceRecords": [
+              "\"v=spf1 include:_spf.google.com ~all\"",
+              "\"google-site-verification=tqvZxD_s-3IRsXbbHSf9yDATOlxTdXiCr9yE9dWZum4\""
+            ]
           }
         ]
       }
