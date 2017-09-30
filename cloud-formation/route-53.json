@@ -21,6 +21,20 @@
               "TTL" : "3600",
               "Type" : "MX"
             }
+          },
+          {
+            "Type" : "AWS::Route53::RecordSet",
+            "Properties" : {
+              "Comment" : "Required for GSuite email forwarding",
+              "HostedZoneName" : "azcard.io",
+              "Name" : "azcard.io.",
+              "ResourceRecords" : [
+                "v=spf1 include:_spf.google.com ~all",
+                "google-site-verification=tqvZxD_s-3IRsXbbHSf9yDATOlxTdXiCr9yE9dWZum4"
+              ],
+              "TTL" : "3600",
+              "Type" : "TXT"
+            }
           }
         ]
       }
