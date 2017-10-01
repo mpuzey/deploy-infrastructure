@@ -2,9 +2,9 @@
 
 This directory contains all the files needed to set up the infrastructure for a static site found at `https://<domain>` and `https://www.<domain>`.
 
-## Result
+## Output
 
-![infrastructure diagram](assets/Untitled Diagram.svg)
+![infrastructure diagram](output.svg)
 
 ## Creating a static-site stack
 
@@ -16,6 +16,7 @@ aws acm request-certificate
 --domain-name <domain> 
 --subject-alternative-names *.<domain>
 ```
+
 Successful execution of the above command will result in an email being sent to `admin@<domain>`. Follow the instructions in the email to verify ownership of the domain before continuing.
 
 #### Running
