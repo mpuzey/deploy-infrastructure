@@ -4,7 +4,7 @@ This directory contains all the files needed to set up the infrastructure for a 
 
 ## Output
 
-![infrastructure diagram](output.svg)
+![infrastructure diagram](output.png)
 
 ## Creating a static-site stack
 
