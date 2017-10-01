@@ -10,8 +10,7 @@
   },
   "Parameters": {
     "RootDomain": {
-      "Type": "String",
-      "Default": "azcard.io"
+      "Type": "String"
     },
     "IndexDocument": {
       "Type": "String",
@@ -23,23 +22,23 @@
     }
   },
   "Resources": {
-    "RootDistribution": {
-      "Type" : "AWS::CloudFront::Distribution",
-      "Properties" : {
-        "DistributionConfig" : {
-          "Aliases" : [ "azcard.io" ],
-          "Comment" : String,
-          "DefaultCacheBehavior" : DefaultCacheBehavior,
-          "DefaultRootObject" : { "Ref": "IndexDocument" },
-          "Enabled" : true,
-          "Origins" : [ Origin, ... ],
-          "PriceClass" : String,
-          "Restrictions" : Restriction,
-          "ViewerCertificate" : ViewerCertificate,
-          "WebACLId" : String
-        }
-      }
-    },
+//    "RootDistribution": {
+//      "Type" : "AWS::CloudFront::Distribution",
+//      "Properties" : {
+//        "DistributionConfig" : {
+//          "Aliases" : [ { "Ref" : "RootDomain" } ],
+//          "Comment" : String,
+//          "DefaultCacheBehavior" : DefaultCacheBehavior,
+//          "DefaultRootObject" : { "Ref": "IndexDocument" },
+//          "Enabled" : true,
+//          "Origins" : [ Origin, ... ],
+//          "PriceClass" : String,
+//          "Restrictions" : Restriction,
+//          "ViewerCertificate" : ViewerCertificate,
+//          "WebACLId" : String
+//        }
+//      }
+//    },
     "RootBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -48,8 +47,12 @@
           "Ref": "RootDomain"
         },
         "WebsiteConfiguration": {
-          "ErrorDocument": "error.html",
-          "IndexDocument": "index.html"
+          "ErrorDocument": {
+            "Ref": "ErrorDocument"
+          },
+          "IndexDocument": {
+            "Ref": "IndexDocument"
+          }
         }
       }
     },
