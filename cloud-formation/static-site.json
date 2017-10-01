@@ -1,0 +1,197 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Mappings": {
+    "RegionMap": {
+      "eu-west-2": {
+        "S3HostedZoneID": "Z3GKZC51ZF0DB4",
+        "WebsiteEndpoint": "s3-website.eu-west-2.amazonaws.com"
+      }
+    }
+  },
+  "Parameters": {
+    "RootDomain": {
+      "Type": "String",
+      "Default": "azcard.io"
+    },
+    "IndexDocument": {
+      "Type": "String",
+      "Default": "index.html"
+    },
+    "ErrorDocument": {
+      "Type": "String",
+      "Default": "error.html"
+    }
+  },
+  "Resources": {
+    "RootDistribution": {
+      "Type" : "AWS::CloudFront::Distribution",
+      "Properties" : {
+        "DistributionConfig" : {
+          "Aliases" : [ "azcard.io" ],
+          "Comment" : String,
+          "DefaultCacheBehavior" : DefaultCacheBehavior,
+          "DefaultRootObject" : { "Ref": "IndexDocument" },
+          "Enabled" : true,
+          "Origins" : [ Origin, ... ],
+          "PriceClass" : String,
+          "Restrictions" : Restriction,
+          "ViewerCertificate" : ViewerCertificate,
+          "WebACLId" : String
+        }
+      }
+    },
+    "RootBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "PublicRead",
+        "BucketName": {
+          "Ref": "RootDomain"
+        },
+        "WebsiteConfiguration": {
+          "ErrorDocument": "error.html",
+          "IndexDocument": "index.html"
+        }
+      }
+    },
+    "RootBucketPolicy" : {
+      "Type": "AWS::S3::BucketPolicy",
+      "DependsOn" : "RootBucket",
+      "Properties": {
+        "Bucket": {
+          "Ref": "RootBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "RootBucket"
+                    },
+                    "/*"
+                  ]
+                ]
+              },
+              "Principal": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WWWBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "PublicRead",
+        "BucketName": {
+          "Fn::Join": [
+            ".",
+            [
+              "www",
+              {
+                "Ref": "RootDomain"
+              }
+            ]
+          ]
+        },
+        "WebsiteConfiguration" : {
+          "RedirectAllRequestsTo": {
+            "HostName": {
+              "Ref": "RootBucket"
+            }
+          }
+        }
+      }
+    },
+    "WWWBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "DependsOn": "WWWBucket",
+      "Properties": {
+        "Bucket": { "Fn::Join": [ "", [ "www.", { "Ref": "RootDomain" } ] ] },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": [ "s3:GetObject" ],
+              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::www.", { "Ref": "RootDomain" }, "/*" ] ] }
+            }
+          ]
+        }
+      }
+    },
+    "DNSEntries": {
+      "Type": "AWS::Route53::RecordSetGroup",
+      "Properties": {
+        "HostedZoneName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "RootDomain"
+              },
+              "."
+            ]
+          ]
+        },
+        "RecordSets": [
+          {
+            "Name": {
+              "Ref": "RootDomain"
+            },
+            "Type": "A",
+            "AliasTarget": {
+              "HostedZoneId": {
+                "Fn::FindInMap": [
+                  "RegionMap",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "S3HostedZoneID"
+                ]
+              },
+              "DNSName": {
+                "Fn::FindInMap": [
+                  "RegionMap",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "WebsiteEndpoint"
+                ]
+              }
+            }
+          },
+          {
+            "Name": {
+              "Fn::Join": [
+                "",
+                [
+                  "www.",
+                  {
+                    "Ref": "RootDomain"
+                  }
+                ]
+              ]
+            },
+            "Type": "CNAME",
+            "TTL": "900",
+            "ResourceRecords": [
+              {
+                "Fn::GetAtt": [
+                  "WWWBucket",
+                  "DomainName"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
