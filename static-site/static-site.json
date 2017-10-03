@@ -2,15 +2,36 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Mappings": {
     "RegionMap": {
+      "eu-west-1": {
+        "S3HostedZoneID": "Z1BKCTXD74EZPE",
+        "WebsiteEndpoint": "s3-website-eu-west-1.amazonaws.com"
+      },
       "eu-west-2": {
         "S3HostedZoneID": "Z3GKZC51ZF0DB4",
         "WebsiteEndpoint": "s3-website.eu-west-2.amazonaws.com"
+      },
+      "us-east-1": {
+        "S3HostedZoneID": "Z3AQBSTGFYJSTF",
+        "WebsiteEndpoint": "s3-website-us-east-1.amazonaws.com"
+      },
+      "us-west-1": {
+        "S3HostedZoneID": "Z2F56UZL2M1ACD",
+        "WebsiteEndpoint": "s3-website-us-west-1.amazonaws.com"
+      },
+      "us-west-2": {
+        "S3HostedZoneID": "Z3BJ6K6RIION7M",
+        "WebsiteEndpoint": "s3-website-us-west-2.amazonaws.com"
       }
     }
   },
   "Parameters": {
     "RootDomain": {
       "Type": "String"
+    },
+    "AcmCertificateArn": {
+      "Type": "String",
+      "Description": "the ARN of an AWS Certificate Manager certificate",
+      "AllowedPattern": "arn:aws:acm:.*"
     },
     "IndexDocument": {
       "Type": "String",
@@ -22,23 +43,6 @@
     }
   },
   "Resources": {
-//    "RootDistribution": {
-//      "Type" : "AWS::CloudFront::Distribution",
-//      "Properties" : {
-//        "DistributionConfig" : {
-//          "Aliases" : [ { "Ref" : "RootDomain" } ],
-//          "Comment" : String,
-//          "DefaultCacheBehavior" : DefaultCacheBehavior,
-//          "DefaultRootObject" : { "Ref": "IndexDocument" },
-//          "Enabled" : true,
-//          "Origins" : [ Origin, ... ],
-//          "PriceClass" : String,
-//          "Restrictions" : Restriction,
-//          "ViewerCertificate" : ViewerCertificate,
-//          "WebACLId" : String
-//        }
-//      }
-//    },
     "RootBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -54,11 +58,11 @@
             "Ref": "IndexDocument"
           }
         }
-      }
+      },
+      "DeletionPolicy": "Retain"
     },
     "RootBucketPolicy" : {
       "Type": "AWS::S3::BucketPolicy",
-      "DependsOn" : "RootBucket",
       "Properties": {
         "Bucket": {
           "Ref": "RootBucket"
@@ -66,9 +70,8 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:GetObject"
-              ],
+              "Sid": "PublicReadForGetBucketObjects",
+              "Action": "s3:GetObject",
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
@@ -85,6 +88,64 @@
               "Principal": "*"
             }
           ]
+        }
+      }
+    },
+    "RootDistribution": {
+      "Type" : "AWS::CloudFront::Distribution",
+      "DependsOn": [ "RootBucket" ],
+      "Properties" : {
+        "DistributionConfig" : {
+          "Comment" : "Cloud distribution pointing to S3 bucket containing site contents",
+          "Origins" : [
+            {
+              "DomainName": {
+                "Fn::Join": [
+                  ".",
+                  [
+                    {
+                      "Ref": "RootDomain"
+                    },
+                    {
+                      "Fn::FindInMap": [
+                        "RegionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "WebsiteEndpoint"
+                      ]
+                    }
+                  ]
+                ]
+              },
+              "Id": "S3Origin",
+              "CustomOriginConfig": {
+                "HttpPort": "80",
+                "HttpsPort": "443",
+                "OriginProtocolPolicy": "http-only"
+              }
+            }
+          ],
+          "Enabled" : true,
+          "DefaultRootObject" : { "Ref": "IndexDocument" },
+          "Aliases" : [ { "Ref" : "RootDomain" } ],
+          "DefaultCacheBehavior" : {
+            "AllowedMethods": ["GET", "HEAD"],
+            "Compress": true,
+            "TargetOriginId": "S3Origin",
+            "ForwardedValues": {
+              "QueryString": true,
+              "Cookies": {
+                "Forward": "none"
+              }
+            },
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "PriceClass" : "PriceClass100",
+          "ViewerCertificate" : {
+            "AcmCertificateArn": { "Ref": "AcmCertificateArn" },
+            "SslSupportMethod": "sni-only"
+          }
         }
       }
     },
@@ -114,18 +175,74 @@
     },
     "WWWBucketPolicy": {
       "Type": "AWS::S3::BucketPolicy",
-      "DependsOn": "WWWBucket",
       "Properties": {
         "Bucket": { "Fn::Join": [ "", [ "www.", { "Ref": "RootDomain" } ] ] },
         "PolicyDocument": {
           "Statement": [
             {
+              "Sid": "PublicReadForGetForwardingBucketObjects",
               "Effect": "Allow",
               "Principal": "*",
-              "Action": [ "s3:GetObject" ],
-              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::www.", { "Ref": "RootDomain" }, "/*" ] ] }
+              "Action": "s3:GetObject",
+              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "WWWBucket" }, "/*" ] ] }
             }
           ]
+        }
+      }
+    },
+    "WWWDistribution": {
+      "Type" : "AWS::CloudFront::Distribution",
+      "DependsOn": [ "WWWBucket" ],
+      "Properties" : {
+        "DistributionConfig" : {
+          "Comment" : "Cloud distribution pointing to S3 bucket redirecting to root bucket",
+          "Origins" : [
+            {
+              "DomainName": {
+                "Fn::Join": [
+                  ".",
+                  [
+                    { "Fn::Join": [ "", [ "www.", { "Ref": "RootDomain" } ] ] },
+                    {
+                      "Fn::FindInMap": [
+                        "RegionMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "WebsiteEndpoint"
+                      ]
+                    }
+                  ]
+                ]
+              },
+              "Id": "S3WWWOrigin",
+              "CustomOriginConfig": {
+                "HttpPort": "80",
+                "HttpsPort": "443",
+                "OriginProtocolPolicy": "http-only"
+              }
+            }
+          ],
+          "Enabled" : true,
+          "DefaultRootObject" : { "Ref": "IndexDocument" },
+          "Aliases" : [ { "Ref" : "WWWDomain" } ],
+          "DefaultCacheBehavior" : {
+            "AllowedMethods": ["GET", "HEAD"],
+            "Compress": true,
+            "TargetOriginId": "S3WWWOrigin",
+            "ForwardedValues": {
+              "QueryString": true,
+              "Cookies": {
+                "Forward": "none"
+              }
+            },
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "PriceClass" : "PriceClass100",
+          "ViewerCertificate" : {
+            "AcmCertificateArn": { "Ref": "AcmCertificateArn" },
+            "SslSupportMethod": "sni-only"
+          }
         }
       }
     },
@@ -160,12 +277,9 @@
                 ]
               },
               "DNSName": {
-                "Fn::FindInMap": [
-                  "RegionMap",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "WebsiteEndpoint"
+                "Fn::GetAtt": [
+                  "RootDistribution",
+                  "DomainName"
                 ]
               }
             }
@@ -182,19 +296,35 @@
                 ]
               ]
             },
-            "Type": "CNAME",
-            "TTL": "900",
-            "ResourceRecords": [
-              {
+            "Type": "A",
+            "AliasTarget": {
+              "HostedZoneId": {
+                "Fn::FindInMap": [
+                  "RegionMap",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "S3HostedZoneID"
+                ]
+              },
+              "DNSName": {
                 "Fn::GetAtt": [
-                  "WWWBucket",
+                  "WWWDistribution",
                   "DomainName"
                 ]
               }
-            ]
+            }
           }
         ]
       }
+    }
+  },
+  "Outputs": {
+    "RootDistributionEndpoint": {
+      "Value": { "Fn::GetAtt": [ "RootDistribution", "DomainName" ] }
+    },
+    "WWWDistributionEndpoint": {
+      "Value": { "Fn::GetAtt": [ "WWWDistribution", "DomainName" ] }
     }
   }
 }
