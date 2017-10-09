@@ -1,21 +1,18 @@
 {
-  "Type" : "AWS::Lambda::Function",
-  "Properties" : {
-    "Code" : {
-      "ZipFile": {
-        "Fn::Join": [
-          "\n",
-          [
-            "exports.handler = function(event, context) {",
-            "  console.log('hello world!');",
-            "};"
-          ]
-        ]
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+      "RequestIak": {
+      "Type" : "AWS::Lambda::Function",
+      "Properties" : {
+        "Code" : {
+          "S3Bucket": "lambda-functions",
+          "S3Key": "request-iak.zip"
+        },
+        "FunctionName" : "request-iak",
+        "Handler" : "request-iak.lambda",
+        "Role" : {"Fn::GetAtt": ["ApiLambdaRole", "Arn"]},
+        "Runtime" : "python3.6",
       }
-    },
-    "FunctionName" : "request-iak",
-    "Handler" : "request-iak.lambda",
-    "Role" : {"Fn::GetAtt": ["ApiLambdaRole", "Arn"]},
-    "Runtime" : "python3.6",
+    }
   }
 }

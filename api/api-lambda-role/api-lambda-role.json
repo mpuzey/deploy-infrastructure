@@ -25,7 +25,7 @@
           "Statement": [
             {
               "Action": [
-                "dynamo:PutItem*",
+                "dynamodb:PutItem*",
                 "lambda:InvokeFunction*",
               ],
               "Resource": [ "*" ],
