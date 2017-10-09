@@ -1,35 +1,40 @@
-"ApiLambdaRole":{
-  "Type": "AWS::IAM::Role",
-  "Properties": {
-    "AssumeRolePolicyDocument": {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Action": ["sts:AssumeRole"],
-          "Effect": "Allow",
-          "Principal": {"Service": ["lambda.amazonaws.com"]}
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "ApiLambdaRole":{
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": ["sts:AssumeRole"],
+              "Effect": "Allow",
+              "Principal": {"Service": ["lambda.amazonaws.com"]}
+            }
+          ]
         }
-      ]
-    }
-  }
-},
-"ApiLambdaPolicy": {
-  "Type": "AWS::IAM::Policy",
-  "Properties": {
-    "PolicyName": "ApiLambdaPolicy",
-    "PolicyDocument": {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Action": [
-            "dynamo:PutItem*",
-            "lambda:InvokeFunction*",
-          ],
-          "Resource": [ "*" ],
-          "Effect": "Allow"
-        }
-      ]
+      }
     },
-    "Roles": [{"Ref": "ApiLambdaRole"}]
+    "ApiLambdaPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "ApiLambdaPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "dynamo:PutItem*",
+                "lambda:InvokeFunction*",
+              ],
+              "Resource": [ "*" ],
+              "Effect": "Allow"
+            }
+          ]
+        },
+        "Roles": [{"Ref": "ApiLambdaRole"}]
+      }
+    }
   }
 }
