@@ -1,0 +1,34 @@
+"ApiLambdaPolicy": {
+  "Type": "AWS::IAM::Policy",
+  "Properties": {
+    "PolicyName": "ApiLambdaPolicy",
+    "PolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Action": [
+            "dynamo:Put*",
+          ],
+          "Resource": [ "*" ],
+          "Effect": "Allow"
+        }
+      ]
+    },
+    "Roles": [{"Ref": "APILambdaRole"}]
+  }
+},
+"APILambdaRole": {
+  "Type": "AWS::IAM::Role",
+  "Properties": {
+    "AssumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Action": ["sts:AssumeRole"],
+          "Effect": "Allow",
+          "Principal": {"Service": ["lambda.amazonaws.com"]}
+        }
+      ]
+    }
+  }
+},
