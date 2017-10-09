@@ -1,15 +1,15 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-      "RequestIak": {
+      "CreateIak": {
       "Type" : "AWS::Lambda::Function",
       "Properties" : {
         "Code" : {
           "S3Bucket": "lambda-functions",
-          "S3Key": "request-iak.zip"
+          "S3Key": "create-iak.zip"
         },
         "FunctionName" : "request-iak",
-        "Handler" : "request-iak.handle",
+        "Handler" : "create-iak.handle",
         "Role" : {"Fn::GetAtt": ["ApiLambdaRole", "Arn"]},
         "Runtime" : "python3.6",
       }
