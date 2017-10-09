@@ -1,32 +1,10 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Mappings": {
-    "RegionMap": {
-      "eu-west-1": {
-        "S3HostedZoneID": "Z1BKCTXD74EZPE",
-        "WebsiteEndpoint": "s3-website-eu-west-1.amazonaws.com"
-      },
-      "eu-west-2": {
-        "S3HostedZoneID": "Z3GKZC51ZF0DB4",
-        "WebsiteEndpoint": "s3-website.eu-west-2.amazonaws.com"
-      },
-      "us-east-1": {
-        "S3HostedZoneID": "Z3AQBSTGFYJSTF",
-        "WebsiteEndpoint": "s3-website-us-east-1.amazonaws.com"
-      },
-      "us-west-1": {
-        "S3HostedZoneID": "Z2F56UZL2M1ACD",
-        "WebsiteEndpoint": "s3-website-us-west-1.amazonaws.com"
-      },
-      "us-west-2": {
-        "S3HostedZoneID": "Z3BJ6K6RIION7M",
-        "WebsiteEndpoint": "s3-website-us-west-2.amazonaws.com"
-      }
-    }
-  },
+  "Description": "Creates a static site hosted in S3 for a bare domain and a www sub-domain.",
   "Parameters": {
     "RootDomain": {
-      "Type": "String"
+      "Type": "String",
+      "Description": "the bare dns name of an existing Amazon Route 53 hosted zone"
     },
     "AcmCertificateArn": {
       "Type": "String",
@@ -40,6 +18,13 @@
     "ErrorDocument": {
       "Type": "String",
       "Default": "error.html"
+    }
+  },
+  "Mappings": {
+    "RegionMap": {
+      "eu-west-2": {
+        "WebsiteEndpoint": "s3-website.eu-west-2.amazonaws.com"
+      }
     }
   },
   "Resources": {
@@ -120,8 +105,8 @@
               },
               "Id": "S3Origin",
               "CustomOriginConfig": {
-                "HttpPort": "80",
-                "HttpsPort": "443",
+                "HTTPPort": "80",
+                "HTTPSPort": "443",
                 "OriginProtocolPolicy": "http-only"
               }
             }
@@ -141,7 +126,7 @@
             },
             "ViewerProtocolPolicy": "redirect-to-https"
           },
-          "PriceClass" : "PriceClass100",
+          "PriceClass" : "PriceClass_100",
           "ViewerCertificate" : {
             "AcmCertificateArn": { "Ref": "AcmCertificateArn" },
             "SslSupportMethod": "sni-only"
@@ -217,15 +202,15 @@
               },
               "Id": "S3WWWOrigin",
               "CustomOriginConfig": {
-                "HttpPort": "80",
-                "HttpsPort": "443",
+                "HTTPPort": "80",
+                "HTTPSPort": "443",
                 "OriginProtocolPolicy": "http-only"
               }
             }
           ],
           "Enabled" : true,
           "DefaultRootObject" : { "Ref": "IndexDocument" },
-          "Aliases" : [ { "Ref" : "WWWDomain" } ],
+          "Aliases" : [ { "Fn::Join": [ "", [ "www.", { "Ref": "RootDomain" } ] ] } ],
           "DefaultCacheBehavior" : {
             "AllowedMethods": ["GET", "HEAD"],
             "Compress": true,
@@ -238,7 +223,7 @@
             },
             "ViewerProtocolPolicy": "redirect-to-https"
           },
-          "PriceClass" : "PriceClass100",
+          "PriceClass" : "PriceClass_100",
           "ViewerCertificate" : {
             "AcmCertificateArn": { "Ref": "AcmCertificateArn" },
             "SslSupportMethod": "sni-only"
@@ -267,15 +252,7 @@
             },
             "Type": "A",
             "AliasTarget": {
-              "HostedZoneId": {
-                "Fn::FindInMap": [
-                  "RegionMap",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "S3HostedZoneID"
-                ]
-              },
+              "HostedZoneId": "Z2FDTNDATAQYW2",
               "DNSName": {
                 "Fn::GetAtt": [
                   "RootDistribution",
@@ -298,15 +275,7 @@
             },
             "Type": "A",
             "AliasTarget": {
-              "HostedZoneId": {
-                "Fn::FindInMap": [
-                  "RegionMap",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "S3HostedZoneID"
-                ]
-              },
+              "HostedZoneId": "Z2FDTNDATAQYW2",
               "DNSName": {
                 "Fn::GetAtt": [
                   "WWWDistribution",

@@ -23,7 +23,7 @@ Successful execution of the above command will result in an email being sent to 
 
 ```
 aws cloudformation deploy 
---stack-name <stack-name> 
---template-file ./static-site.json
---parameters ParameterKey=RootDomain,ParameterValue=<domain>
+--stack-name azcardio 
+--template-file static-site.json 
+--parameter-overrides RootDomain=<domain> AcmCertificateArn=<certificate-arn>
 ```
