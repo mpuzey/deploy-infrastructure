@@ -14,8 +14,8 @@
       }
     },
     "FunctionName" : "request-iak",
-    "Handler" : "",
-    "Role" : "arn:aws:iam::551473448333:role/lambda_execution_role",
+    "Handler" : "request-iak.lambda",
+    "Role" : {"Fn::GetAtt": ["ApiLambdaRole", "Arn"]},
     "Runtime" : "python3.6",
   }
 }
