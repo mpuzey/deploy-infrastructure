@@ -2,7 +2,7 @@
   "LambdaArtifacts": {
     "Type": "AWS::S3::Bucket",
     "Properties": {
-      "BucketName": { "Fn::Sub": [ "lambda-artifacts-${AccountId}", { "AccountId": {"Ref" : "AWS::AccountId" }} ]},
+      "BucketName": { "Fn::Sub": [ "lambda-artifacts-${AccountId}", { "AccountId": {"Ref" : "AWS::AccountId" }} ]}
     },
     "DeletionPolicy": "Retain"
   }

@@ -13,7 +13,8 @@
               "Principal": {"Service": ["lambda.amazonaws.com"]}
             }
           ]
-        }
+        },
+        "RoleName": "ApiLambdaRole"
       }
     },
     "ApiLambdaPolicy": {
