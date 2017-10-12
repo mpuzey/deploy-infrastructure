@@ -5,11 +5,11 @@
       "Type" : "AWS::Lambda::Function",
       "Properties" : {
         "Code" : {
-          "S3Bucket": "lambda-functions",
+          "S3Bucket": {"Fn::GetAtt": ["LambdaArtifacts", "Id"]},
           "S3Key": "request-iak.zip"
         },
         "FunctionName" : "request-iak",
-        "Handler" : "request-iak.handle",
+        "Handler" : "lambda.handler",
         "Role" : {"Fn::GetAtt": ["ApiLambdaRole", "Arn"]},
         "Runtime" : "python3.6",
       }
