@@ -1,8 +1,9 @@
-{
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Resources": {
-    "LambdaArtifacts": {
-      "Type" : "AWS::S3::Bucket"
-    }
+"Resources": {
+  "LambdaArtifacts": {
+    "Type": "AWS::S3::Bucket",
+    "Properties": {
+      "BucketName": { "Fn::Sub": [ "lambda-artifacts-${AccountId}", { "AccountId": {"Ref" : "AWS::AccountId" }} ]},
+    },
+    "DeletionPolicy": "Retain"
   }
 }
