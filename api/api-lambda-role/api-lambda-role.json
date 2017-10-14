@@ -37,5 +37,14 @@
         "Roles": [{"Ref": "ApiLambdaRole"}]
       }
     }
+  },
+  "Outputs": {
+    "ApiLambdaRoleArn" : {
+      "Description" : "The arn of the role for api lambda",
+      "Value" : {"Fn::GetAtt": ["ApiLambdaRole", "Arn"]},
+      "Export" : {
+        "Name": "ApiLambdaRoleArn" 
+      }
+    }
   }
 }
