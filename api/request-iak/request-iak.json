@@ -5,7 +5,7 @@
       "Type" : "AWS::Lambda::Function",
       "Properties" : {
         "Code" : {
-          "S3Bucket": {"Fn::ImportValue" : "LambdaArtifactsBucketArn"},
+          "S3Bucket": {"Fn::ImportValue" : "LambdaArtifactsBucketName"},
           "S3Key": "request-iak.zip"
         },
         "FunctionName" : "request-iak",

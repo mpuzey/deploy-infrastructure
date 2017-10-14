@@ -10,11 +10,11 @@
     },
   },
   "Outputs": {
-    "LambdaArtifactsBucketArn" : {
-      "Description" : "The arn of the s3 bucket for lambda artifacts",
-      "Value" : {"Fn::GetAtt": ["LambdaArtifacts", "Arn"]},
+    "LambdaArtifactsBucketName" : {
+      "Description" : "The name of the s3 bucket for lambda artifacts",
+      "Value" : {"Ref": "LambdaArtifacts"},
       "Export" : {
-        "Name" : "LambdaArtifactsBucketArn"
+        "Name" : "LambdaArtifactsBucketName"
       }
     }
   }
