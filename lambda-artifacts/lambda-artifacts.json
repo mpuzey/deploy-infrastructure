@@ -14,7 +14,7 @@
       "Description" : "The arn of the role for api lambda",
       "Value" : {"Fn::GetAtt": ["LambdaArtifacts", "Arn"]},
       "Export" : {
-        "Name" : { "Fn::Sub": [ "lambda-artifacts-${AccountId}", { "AccountId": {"Ref" : "AWS::AccountId" }} ]}
+        "Name" : "LambdaArtifactsBucketArn"
       }
     }
   }
