@@ -1,9 +1,21 @@
-"Resources": {
-  "LambdaArtifacts": {
-    "Type": "AWS::S3::Bucket",
-    "Properties": {
-      "BucketName": { "Fn::Sub": [ "lambda-artifacts-${AccountId}", { "AccountId": {"Ref" : "AWS::AccountId" }} ]}
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "LambdaArtifacts": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Fn::Sub": [ "lambda-artifacts-${AccountId}", { "AccountId": {"Ref" : "AWS::AccountId" }} ]}
+      },
+      "DeletionPolicy": "Retain"
     },
-    "DeletionPolicy": "Retain"
+  },
+  "Outputs": {
+    "LambdaArtifactsBucketArn" : {
+      "Description" : "The arn of the role for api lambda",
+      "Value" : {"Fn::GetAtt": ["LambdaArtifacts", "Arn"]},
+      "Export" : {
+        "Name" : { "Fn::Sub": [ "lambda-artifacts-${AccountId}", { "AccountId": {"Ref" : "AWS::AccountId" }} ]}
+      }
+    }
   }
 }
