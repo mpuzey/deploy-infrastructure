@@ -11,7 +11,7 @@
   },
   "Outputs": {
     "LambdaArtifactsBucketArn" : {
-      "Description" : "The arn of the role for api lambda",
+      "Description" : "The arn of the s3 bucket for lambda artifacts",
       "Value" : {"Fn::GetAtt": ["LambdaArtifacts", "Arn"]},
       "Export" : {
         "Name" : "LambdaArtifactsBucketArn"
