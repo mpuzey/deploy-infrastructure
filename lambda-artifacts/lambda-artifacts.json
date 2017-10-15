@@ -11,7 +11,7 @@
   },
   "Outputs": {
     "LambdaArtifactsBucketName" : {
-      "Description" : "The name of the s3 bucket for lambda artifacts",
+      "Description" : "The name of the lambda artifacts s3 bucket",
       "Value" : {"Ref": "LambdaArtifacts"},
       "Export" : {
         "Name" : "LambdaArtifactsBucketName"

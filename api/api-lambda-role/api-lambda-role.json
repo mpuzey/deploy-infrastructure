@@ -26,8 +26,27 @@
           "Statement": [
             {
               "Action": [
-                "dynamodb:PutItem*",
-                "lambda:InvokeFunction*",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [ "*" ],
+              "Effect": "Allow"
+            }
+          ],
+          "Statement": [
+            {
+              "Action": [
+                "lambda:InvokeFunction"
+              ],
+              "Resource": [ "*" ],
+              "Effect": "Allow"
+            }
+          ],
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:PutItem"
               ],
               "Resource": [ "*" ],
               "Effect": "Allow"
@@ -43,7 +62,7 @@
       "Description" : "The arn of the role for api lambda",
       "Value" : {"Fn::GetAtt": ["ApiLambdaRole", "Arn"]},
       "Export" : {
-        "Name": "ApiLambdaRoleArn" 
+        "Name": "ApiLambdaRoleArn"
       }
     }
   }
