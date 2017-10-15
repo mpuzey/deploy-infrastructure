@@ -32,18 +32,14 @@
               ],
               "Resource": [ "*" ],
               "Effect": "Allow"
-            }
-          ],
-          "Statement": [
+            },
             {
               "Action": [
                 "lambda:InvokeFunction"
               ],
               "Resource": [ "*" ],
               "Effect": "Allow"
-            }
-          ],
-          "Statement": [
+            },
             {
               "Action": [
                 "dynamodb:PutItem"
@@ -51,7 +47,7 @@
               "Resource": [ "*" ],
               "Effect": "Allow"
             }
-          ]
+          ],
         },
         "Roles": [{"Ref": "ApiLambdaRole"}]
       }
