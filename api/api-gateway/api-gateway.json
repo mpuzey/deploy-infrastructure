@@ -1,0 +1,23 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "API Gateway",
+  "Resources": {
+    "ApiGateway": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "Azcard API Gateway",
+        "Description": "The API Gateway for Azcard",
+        "FailOnWarnings" : true
+      }
+    }
+  },
+  "Outputs": {
+    "ApiGatewayId" : {
+      "Description" : "The root resource ID of the API Gateway",
+      "Value" : {"Fn::GetAtt": ["ApiGateway", "RootResourceId"]},
+      "Export" : {
+        "Name": "ApiGatewayId"
+      }
+    }
+  }
+}
