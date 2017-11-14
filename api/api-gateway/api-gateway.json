@@ -1,6 +1,18 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "API Gateway",
+  "Parameters": {
+    "ApiGatewayStageToDeploy": {
+      "Description": "The API Gateway stage to deploy",
+      "Default": "test",
+      "Type": "String",
+      "AllowedValues": ["test", "prod"],
+      "ConstraintDescription": "Must specify either test or prod"
+    }
+  },
+  "Conditions": {
+    "DeployTestStage": {"Fn::Equals": [{"Ref": "ApiGatewayStageToDeploy"}, "test"]},
+    "DeployProdStage": {"Fn::Equals": [{"Ref": "ApiGatewayStageToDeploy"}, "prod"]}
+  },
   "Resources": {
     "ApiGateway": {
       "Type": "AWS::ApiGateway::RestApi",
@@ -9,13 +21,61 @@
         "Description": "The API Gateway for Azcard",
         "FailOnWarnings" : true
       }
+    },
+    "ApiGatewayAccount": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {"Fn::ImportValue" : "ApiGatewayCloudWatchLogsRoleArn"}
+      }
+    },
+    "ApiGatewayTestStage": {
+      "DependsOn": ["ApiGatewayAccount"],
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "Description": "The test stage for the API Gateway",
+        "DeploymentId": {"Ref": "ApiDeployment"},
+        "MethodSettings": [{
+          "DataTraceEnabled": true,
+          "MetricsEnabled": true,
+          "HttpMethod": "*",
+          "LoggingLevel": "INFO",
+          "ResourcePath": "/*"
+        }],
+        "RestApiId": {"Ref": "ApiGateway"},
+        "StageName": "test"
+      }
+    },
+    "ApiGatewayProdStage": {
+      "DependsOn": ["ApiGatewayAccount"],
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "Description": "The production stage for the API Gateway",
+        "DeploymentId": {"Ref": "ApiDeployment"},
+        "MethodSettings": [{
+          "DataTraceEnabled": true,
+          "MetricsEnabled": true,
+          "HttpMethod": "*",
+          "LoggingLevel": "INFO",
+          "ResourcePath": "/*"
+        }],
+        "RestApiId": {"Ref": "ApiGateway"},
+        "StageName": "prod"
+      }
+    },
+    "ApiDeployment": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "Description": "Creates an API Gateway deployment for a specified stage",
+        "RestApiId": {"Ref": "ApiGateway"},
+        "StageName": {"Ref": "ApiGatewayStageToDeploy"}
+      }
     }
   },
   "Outputs": {
-    "ApiGatewayId" : {
-      "Description" : "The root resource ID of the API Gateway",
-      "Value" : {"Fn::GetAtt": ["ApiGateway", "RootResourceId"]},
-      "Export" : {
+    "ApiGatewayId": {
+      "Description": "The root resource ID of the API Gateway",
+      "Value": {"Fn::GetAtt": ["ApiGateway", "RootResourceId"]},
+      "Export": {
         "Name": "ApiGatewayId"
       }
     }
