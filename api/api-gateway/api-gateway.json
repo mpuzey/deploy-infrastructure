@@ -50,8 +50,11 @@
         "ResourceId": {"Ref": "CreateIakResource"},
         "RestApiId": {"Ref": "ApiGateway"},
         "MethodResponses": [{
-          "StatusCode": 200
-        }]
+          "StatusCode": 200,
+          "ResponseModels": {
+              "application/json": "Empty"
+            }
+          }]
       }
     },
     "ApiGatewayTestStage": {
