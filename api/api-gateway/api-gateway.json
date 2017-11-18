@@ -17,6 +17,9 @@
         }
       }
     },
+
+
+
     "CreateIakResource": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
@@ -134,21 +137,6 @@
         ]
       }
     },
-    "RequestIakResource": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "ApiGateway"
-        },
-        "ParentId": {
-          "Fn::GetAtt": [
-            "ApiGateway",
-            "RootResourceId"
-          ]
-        },
-        "PathPart": "requestiak"
-      }
-    },
     "RequestIakTestStageLambdaPermission": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
@@ -236,7 +224,7 @@
           }
         },
         "ResourceId": {
-          "Ref": "RequestIakResource"
+          "Ref": "CreateIakResource"
         },
         "RestApiId": {
           "Ref": "ApiGateway"
