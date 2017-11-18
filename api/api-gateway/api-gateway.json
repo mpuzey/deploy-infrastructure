@@ -15,17 +15,6 @@
         "CloudWatchRoleArn": {"Fn::ImportValue" : "ApiGatewayCloudWatchLogsRoleArn"}
       }
     },
-    "CreateIakLambdaPermission": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:invokeFunction",
-        "FunctionName": {"Fn::ImportValue" : "CreateIakLambdaArn"},
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {"Fn::Join": ["",
-          ["arn:aws:execute-api:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":", {"Ref": "ApiGateway"}, "/*"]
-        ]}
-      }
-    },
     "CreateIakResource": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
@@ -35,7 +24,7 @@
       }
     },
     "CreateIakRequest": {
-      "DependsOn": "CreateIakLambdaPermission",
+      "DependsOn": "CreateIakTestStageLambdaPermission",
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "AuthorizationType": "NONE",
@@ -44,7 +33,7 @@
           "Type": "AWS_PROXY",
           "IntegrationHttpMethod": "POST",
           "Uri": {"Fn::Join" : ["",
-            ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, ":lambda:path/2015-03-31/functions/", {"Fn::ImportValue" : "CreateIakLambdaArn"}, "/invocations"]
+            ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, ":lambda:path/2015-03-31/functions/", {"Fn::ImportValue" : "CreateIakLambdaArn"},  ":${stageVariables.LambdaAlias}", "/invocations"]
           ]},
         },
         "ResourceId": {"Ref": "CreateIakResource"},
@@ -55,6 +44,28 @@
               "application/json": "Empty"
             }
           }]
+      }
+    },
+    "CreateIakTestStageLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:invokeFunction",
+        "FunctionName": {"Fn::ImportValue" : "CreateIakTestAlias"},
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {"Fn::Join": ["",
+          ["arn:aws:execute-api:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":", {"Ref": "ApiGateway"}, "/*"]
+        ]}
+      }
+    },
+    "CreateIakProdStageLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:invokeFunction",
+        "FunctionName": {"Fn::ImportValue" : "CreateIakProdAlias"},
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {"Fn::Join": ["",
+          ["arn:aws:execute-api:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":", {"Ref": "ApiGateway"}, "/*"]
+        ]}
       }
     },
     "ApiGatewayTestStage": {
@@ -71,7 +82,10 @@
           "ResourcePath": "/*"
         }],
         "RestApiId": {"Ref": "ApiGateway"},
-        "StageName": "test"
+        "StageName": "test",
+        "Variables": {
+          "LambdaAlias": "test"
+        }
       }
     },
     "ApiGatewayProdStage": {
@@ -87,11 +101,14 @@
           "LoggingLevel": "INFO",
           "ResourcePath": "/*"
         }],
-        "RestApiId": {"Ref": "ApiGateway"},
-        "StageName": "prod"
+      "RestApiId": {"Ref": "ApiGateway"},
+      "StageName": "prod",
+      "Variables": {
+        "LambdaAlias": "prod"
       }
-    },
-    "ApiDeployment": {
+    }
+  },
+  "ApiDeployment": {
       "DependsOn": "CreateIakRequest",
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
