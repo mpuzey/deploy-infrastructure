@@ -17,10 +17,7 @@
         }
       }
     },
-
-
-
-    "CreateIakResource": {
+    "ApiGatewayInternalResourceIak": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
         "RestApiId": {
@@ -122,7 +119,7 @@
           }
         },
         "ResourceId": {
-          "Ref": "CreateIakResource"
+          "Ref": "ApiGatewayInternalResourceIak"
         },
         "RestApiId": {
           "Ref": "ApiGateway"
@@ -224,7 +221,7 @@
           }
         },
         "ResourceId": {
-          "Ref": "CreateIakResource"
+          "Ref": "ApiGatewayInternalResourceIak"
         },
         "RestApiId": {
           "Ref": "ApiGateway"
