@@ -4,11 +4,11 @@ This repository contains the files and scripts needed to create azcard infrastru
 # Installation
 
 ```
-brew install terraform && brew install tfenv 
+brew install terraform && brew install tfenv
 ```
 
 # Setup
 To initialise the repo locally run the following:
 ```
-terraform init
+terraform init -backend-config="key=config/nonprod-backend.tf"
 ```
