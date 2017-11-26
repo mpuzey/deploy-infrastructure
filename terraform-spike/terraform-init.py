@@ -7,6 +7,7 @@ parser.add_argument('--project', help='The name of the project e.g. azcard')
 parser.add_argument('--account_id', help='The aws account id')
 parser.add_argument('--region', help='The aws region e.g. eu-west-2')
 parser.add_argument('--environment', help='The aws environment e.g. nonprod')
+parser.add_argument('--component', help='The terraform component to name the tf state file by')
 
 args=parser.parse_args()
 
