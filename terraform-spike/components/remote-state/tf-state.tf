@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "tf_remote_state_bucket" {
-  bucket = "${var.bucket_name}"
+  bucket = "tf-state-${var.account_id}-${var.region}"
   acl    = "private"
 
   versioning {
