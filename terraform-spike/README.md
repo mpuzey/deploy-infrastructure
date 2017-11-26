@@ -13,13 +13,23 @@ Terraform uses the s3 backend to store the tf state of our infrastructure remote
 ```
 cd components/remote-state
 terraform init
-terraform plan -var 'account_id=414155656108'
-terraform apply -var 'account_id=414155656108'
+terraform plan -var 'account_id=<account_id>'
+terraform apply -var 'account_id=<account_id>
+```
+
+ The naming convention for backend tf state file under the remote state is `s3://tf-state-${account_id}-${region}/${project}/${account_id}/${region}/remote-state.tfstate`.
+
+The state file for the remote state bucket component should be pushed into the newly configured s3 backend.
+```
+cd components/remote-state
+terraform push
 ```
 
 # Usage
 
 To initialise the repo locally run the following:
 ```
-terraform init -backend-config="key=tf-backend.tf"
+terraform init -backend-config="key=backend-config.tf"
 ```
+
+ The naming convention for tf state files under the remote state is `s3://tf-state-${account_id}-${region}/${project}/${account_id}/${region}/${environment}/${component}.tfstate`.
