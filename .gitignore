@@ -1,5 +1,11 @@
 *.DS_Store
 .idea/
-.terraform/
-terraform.tfstate
-terraform.tfstate.backup
+
+
+### Terraform ###
+# Compiled files
+**/*.tfstate
+**/*.tfplan
+**/*.tfstate.backup
+**/.terraform
+**/.terraform/*
