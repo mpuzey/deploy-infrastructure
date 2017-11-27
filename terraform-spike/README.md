@@ -27,9 +27,9 @@ terraform push
 
 # Usage
 
-To initialise the repo locally run the following:
+To initialise the backend for a particular Terraform component run the following:
 ```
-terraform init -backend-config="key=backend-config.tf"
+ python terraform-init.py --project=azcard --account_id=<accound_id> --region=<region> --environment=<environment> --component=<component>
 ```
-
- The naming convention for tf state files under the remote state is `s3://tf-state-${account_id}-${region}/${project}/${account_id}/${region}/${environment}/${component}.tfstate`.
+The primary purpose of this is to prepare the Terraform backend to store the tfstate file in s3 for a given component. This places the state under an appropriate key in s3 to be versioned off. 
+The naming convention for tf state files under the remote state is `s3://tf-state-${account_id}-${region}/${project}/${account_id}/${region}/${environment}/${component}.tfstate`.
