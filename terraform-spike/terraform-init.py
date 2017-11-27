@@ -20,6 +20,7 @@ file_contents = backend_config_file \
     .replace('{account_id}', args.account_id) \
     .replace('{region}', args.region) \
     .replace('{environment}', args.environment) \
+    .replace('{component}', args.component) \
     . replace(" ", "") \
     .splitlines()
 
