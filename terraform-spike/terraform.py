@@ -8,7 +8,10 @@ def get_account_id(arguments):
 
     process = subprocess.Popen(
         'aws sts get-caller-identity --query \'Account\''
-        ' --profile %s --output text' % arguments.project)
+        ' --profile %s --output text' % arguments.project,
+        stdout=subprocess.PIPE)
+
+    print(process.stdout.read())
 
     return process.stdout.read()
 
@@ -22,10 +25,12 @@ def validate_component(arguments):
 def init(arguments):
     backend_config_file = open('backend-config.txt', 'r')
 
+    account_id = get_account_id(arguments)
+
     file_contents = backend_config_file \
         .read() \
         .replace('{project}', arguments.project) \
-        .replace('{account_id}', arguments.account_id) \
+        .replace('{account_id}', account_id) \
         .replace('{region}', arguments.region) \
         .replace('{environment}', arguments.environment) \
         .replace('{component}', arguments.component) \
