@@ -4,6 +4,15 @@ import subprocess
 import sys
 
 
+def get_account_id(arguments):
+
+    process = subprocess.Popen(
+        'aws sts get-caller-identity --query \'Account\''
+        ' --profile %s --output text' % arguments.project)
+
+    return process.stdout.read()
+
+
 def validate_component(arguments):
     if arguments.component == 'remote-state':
         print('ERROR: Component cannot be one time remote state bucket!')
@@ -39,7 +48,6 @@ if __name__ == "__main__":
 
     parser.add_argument('--action', help='The Terraform action to perform e.g. plan', required=True)
     parser.add_argument('--project', help='The name of the project e.g. azcard', required=True)
-    parser.add_argument('--account_id', help='The aws account id', required=True)
     parser.add_argument('--region', help='The aws region e.g. eu-west-2', required=True)
     parser.add_argument('--environment', help='The aws environment e.g. nonprod', required=True)
     parser.add_argument('--component', help='The terraform component to name the tf state file by', required=True)

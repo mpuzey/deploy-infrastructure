@@ -27,9 +27,9 @@ terraform push
 
 # Usage
 
-To initialise the backend for a particular Terraform component run the following:
+To perform a Terraform action, such as plan, for a particular Terraform component run the following:
 ```
- python terraform-init.py --project=azcard --account_id=<accound_id> --region=<region> --environment=<environment> --component=<component>
+ python terraform.py --action=plan --project=azcard --region=<region> --environment=<environment> --component=<component>
 ```
 The primary purpose of this is to prepare the Terraform backend to store the tfstate file in s3 for a given component. This places the state under an appropriate key in s3 to be versioned off. 
 The naming convention for tf state files under the remote state is `s3://tf-state-${account_id}-${region}/${project}/${account_id}/${region}/${environment}/${component}.tfstate`.
