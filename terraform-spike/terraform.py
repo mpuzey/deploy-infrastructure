@@ -9,11 +9,12 @@ def get_account_id(arguments):
     process = subprocess.Popen(
         'aws sts get-caller-identity --query \'Account\''
         ' --profile %s --output text' % arguments.project,
-        stdout=subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        shell=True)
 
-    print(process.stdout.read())
+    encoded_account_id = process.stdout.read()
 
-    return process.stdout.read()
+    return encoded_account_id.decode('utf-8').rstrip()
 
 
 def validate_component(arguments):
