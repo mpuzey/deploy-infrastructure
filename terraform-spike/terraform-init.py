@@ -12,7 +12,7 @@ parser.add_argument('--component', help='The terraform component to name the tf 
 
 args = parser.parse_args()
 
-backend_config_file = open('backend-config.tf', 'r')
+backend_config_file = open('backend-config.txt', 'r')
 
 file_contents = backend_config_file \
     .read() \
@@ -21,12 +21,13 @@ file_contents = backend_config_file \
     .replace('{region}', args.region) \
     .replace('{environment}', args.environment) \
     .replace('{component}', args.component) \
-    . replace(" ", "") \
+    .replace(" ", "") \
     .splitlines()
 
 init_command = ["terraform", "init"]
 
 for line in file_contents:
-    init_command.append("-backend-config=%s" % line)
+    init_command.append("-backend-config=\"%s\"" % line)
 
+print(init_command)
 subprocess.run(init_command)
