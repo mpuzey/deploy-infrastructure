@@ -2,6 +2,22 @@
 import argparse
 import subprocess
 import sys
+import os
+import json
+
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
+
+
+def execute(cmd):
+
+    #TODO: add kwargs in order to support passing cwd
+
+    working_dir = os.path.join(BASE_PATH, 'components', 'api-lambda-role')
+    popen = subprocess.Popen(cmd,
+                             # shell=True,
+                             universal_newlines=True,
+                             cwd=working_dir)
+    popen.communicate()
 
 
 def get_account_id(arguments):
@@ -15,6 +31,11 @@ def get_account_id(arguments):
     encoded_account_id = process.stdout.read()
 
     return encoded_account_id.decode('utf-8').rstrip()
+
+
+def switch_tf_version():
+    # Use
+    pass
 
 
 def validate_component(arguments):
@@ -41,12 +62,14 @@ def init(arguments):
     init_command = ["terraform", "init"]
 
     for line in file_contents:
-        init_command.append("-backend-config=\"%s\"" % line)
+        escaped_string = json.dumps('-backend-config=\'%s\'' % line)
+        init_command.append(escaped_string)
 
-    subprocess.run(['cd', 'components/%s/' % arguments.component])
+    # stringified = 'terraform init -backend-config="bucket=tf-state-553201512970-eu-west-2" -backend-config="key=azcard/553201512970/eu-west-2/test/api-lambda-role.tfstate" -backend-config="region=eu-west-2" -backend-config="profile=azcard"'
 
-    print(init_command)
-    subprocess.run(init_command)
+    component_path = os.path.join(BASE_PATH, 'components', arguments.component)
+
+    execute(init_command)
 
 
 if __name__ == "__main__":
@@ -64,5 +87,4 @@ if __name__ == "__main__":
 
     init(args)
 
-    subprocess.run(['terraform', args.action])
-    subprocess.run(['cd', '../..'])
+    # subprocess.run(['terraform', args.action])
