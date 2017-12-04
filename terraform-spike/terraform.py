@@ -16,31 +16,13 @@ def execute(cmd, path):
     popen.communicate()
 
 
-def get_account_id(arguments):
-
-    process = subprocess.Popen(
-        'aws sts get-caller-identity --query \'Account\''
-        ' --profile %s --output text' % arguments.project,
-        stdout=subprocess.PIPE,
-        shell=True)
-
-    encoded_account_id = process.stdout.read()
-
-    return encoded_account_id.decode('utf-8').rstrip()
-
-
 def switch_tf_version():
     # Use
     pass
 
 
-def validate_component(arguments):
-    if arguments.component == 'remote-state':
-        print('ERROR: Component cannot be one time remote state bucket!')
-        sys.exit(1)
-
-
 def init(arguments, path):
+
     backend_config_file = open('backend-config.txt', 'r')
 
     account_id = get_account_id(arguments)
@@ -58,13 +40,33 @@ def init(arguments, path):
     init_command = ["terraform", "init"]
 
     for line in file_contents:
-        escaped_string = '-backend-config=%s' % line
-        init_command.append(escaped_string)
+        init_command.append('-backend-config=%s' % line)
 
     execute(init_command, path)
 
 
-if __name__ == "__main__":
+def get_account_id(arguments):
+
+    process = subprocess.Popen(
+        'aws sts get-caller-identity --query \'Account\''
+        ' --profile %s --output text' % arguments.project,
+        stdout=subprocess.PIPE,
+        shell=True)
+
+    encoded_account_id = process.stdout.read()
+
+    return encoded_account_id.decode('utf-8').rstrip()
+
+
+def validate_component(arguments):
+
+    if arguments.component == 'remote-state':
+        print('ERROR: Component cannot be one time remote state bucket!')
+        sys.exit(1)
+
+
+def parse_arguments():
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--action', help='The Terraform action to perform e.g. plan', required=True)
@@ -73,7 +75,12 @@ if __name__ == "__main__":
     parser.add_argument('--environment', help='The aws environment e.g. nonprod', required=True)
     parser.add_argument('--component', help='The terraform component to name the tf state file by', required=True)
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+
+    args = parse_arguments()
 
     validate_component(args)
 
