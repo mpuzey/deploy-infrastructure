@@ -29,9 +29,9 @@ terraform push
 
 To perform a Terraform action, such as plan, for a particular Terraform component run the following:
 ```
- python terraform.py --action=plan --project=azcard --environment=<environment> --component=<component>
+ python terraform.py --action=plan --environment=<environment> --component=<component>
 ```
 The primary purpose of this is to prepare the Terraform backend to store the tfstate file in s3 for a given component. This places the state under an appropriate key in s3 to be versioned off. 
 The naming convention for tf state files under the remote state is `s3://tf-state-${account_id}-${region}/${project}/${account_id}/${region}/${environment}/${component}.tfstate`.
 
-The `--region` parameter can optionally be specified. 
+The `--region` and `--project` parameters can optionally be specified as there are defaults for these. 
