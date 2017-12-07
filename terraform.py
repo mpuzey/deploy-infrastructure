@@ -71,7 +71,7 @@ def parse_arguments():
 
     parser.add_argument('--action', help='The Terraform action to perform e.g. plan', required=True)
     parser.add_argument('--project', help='The name of the project e.g. azcard', required=True)
-    parser.add_argument('--region', help='The aws region e.g. eu-west-2', required=True)
+    parser.add_argument('--region', help='The aws region default=eu-west-2', default='eu-west-2')
     parser.add_argument('--environment', help='The aws environment e.g. nonprod', required=True)
     parser.add_argument('--component', help='The terraform component to name the tf state file by', required=True)
 
