@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "api_lambda_role_policy" {
     effect = "Allow"
     actions = ["s3:ListBucket"]
     resources = [
-      "$arn:aws:s3:::lambda-artifacts-553201512970"
+      "${data.terraform_remote_state.lambda_artifacts_s3_bucket.lambda_artifacts_s3_bucket_arn}"
     ]
   }
 
@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "api_lambda_role_policy" {
     effect = "Allow"
     actions = ["s3:GetObject"]
     resources = [
-      "arn:aws:s3:::lambda-artifacts-553201512970/*"
+      "${data.terraform_remote_state.lambda_artifacts_s3_bucket.lambda_artifacts_s3_bucket_arn}/*"
     ]
   }
 }
