@@ -7,11 +7,16 @@ import os
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
-def execute(cmd, path):
+def execute(cmd, path, arguments):
+
+    # This env var provides a workaround for the following issue:
+    # https://github.com/hashicorp/terraform/issues/13589
+    env_vars = dict(os.environ, AWS_PROFILE=arguments.project)
 
     popen = subprocess.Popen(cmd,
                              universal_newlines=True,
-                             cwd=path)
+                             cwd=path,
+                             env=env_vars)
 
     popen.communicate()
 
@@ -34,15 +39,15 @@ def init(arguments, path):
         .replace('{region}', arguments.region) \
         .replace('{environment}', arguments.environment) \
         .replace('{component}', arguments.component) \
-        .replace(" ", "") \
+        .replace(' ', '') \
         .splitlines()
 
-    init_command = ["terraform", "init"]
+    init_command = ['terraform', 'init']
 
     for line in file_contents:
         init_command.append('-backend-config=%s' % line)
 
-    execute(init_command, path)
+    execute(init_command, path, arguments)
 
 
 def get_account_id(arguments):
@@ -78,7 +83,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     args = parse_arguments()
 
@@ -88,4 +93,4 @@ if __name__ == "__main__":
 
     init(args, component_path)
 
-    execute(["terraform", args.action], component_path)
+    execute(['terraform', args.action], component_path, args)
