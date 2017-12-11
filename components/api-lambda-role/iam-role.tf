@@ -17,10 +17,10 @@ resource "aws_iam_role" "api_lambda_role" {
 resource "aws_iam_role_policy" "api_lambda_role_policy" {
   name = "api-lambda-role-policy"
   role = "${aws_iam_role.api_lambda_role.id}"
-  policy = "${data.aws_iam_policy_document.api_lambda_role_policy.json}"
+  policy = "${data.aws_iam_policy_document.api_lambda_role_policy_document.json}"
 }
 
-data "aws_iam_policy_document" "api_lambda_role_policy" {
+data "aws_iam_policy_document" "api_lambda_role_policy_document" {
 
   statement {
     effect = "Allow"
