@@ -22,7 +22,7 @@ def execute(cmd, path, arguments):
 
 
 def switch_tf_version():
-    # Use
+    # Use terraform 11 
     pass
 
 
