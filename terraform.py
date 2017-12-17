@@ -104,7 +104,7 @@ def execute(cmd, path, arguments):
                              cwd=path,
                              env=env_vars)
 
-    popen.communicate(input="yes")
+    popen.communicate()
 
 
 if __name__ == '__main__':
