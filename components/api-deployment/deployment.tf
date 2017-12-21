@@ -27,7 +27,7 @@ resource "aws_api_gateway_method_settings" "default" {
 
 resource "aws_cloudwatch_log_group" "stage_log_group" {
   name = "API-Gateway-Execution-Logs_${data.terraform_remote_state.api_gateway.api_gateway_id}/${aws_api_gateway_deployment.deployment.stage_name}"
-  retention_in_days = "4"
+  retention_in_days = "5"
 
   tags {
     Environment = "${var.environment}"
