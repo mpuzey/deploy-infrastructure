@@ -1,6 +1,6 @@
 """The purpose of this script it to wrap terraform init to manage s3 keys under the Terraform remote state bucket."""
 import argparse
-import subprocess
+from subprocess import Popen, PIPE
 import sys
 import os
 
@@ -69,10 +69,10 @@ def init(arguments, path):
 
 def get_account_id(arguments):
 
-    process = subprocess.Popen(
+    process = Popen(
         'aws sts get-caller-identity --query \'Account\''
         ' --profile %s --output text' % arguments.project,
-        stdout=subprocess.PIPE,
+        stdout=PIPE,
         shell=True)
 
     encoded_account_id = process.stdout.read()
@@ -99,12 +99,13 @@ def execute(cmd, path, arguments):
     # https://github.com/hashicorp/terraform/issues/13589
     env_vars = dict(os.environ, AWS_PROFILE=arguments.project)
 
-    process = subprocess.Popen(cmd,
-                               universal_newlines=True,
-                               cwd=path,
-                               env=env_vars)
+    process = Popen(cmd,
+                    universal_newlines=True,
+                    cwd=path,
+                    env=env_vars,
+                    stdin=PIPE)
 
-    process.communicate()
+    process.communicate(input="yes")
 
     if process.returncode != 0:
         sys.exit(1)
