@@ -38,7 +38,7 @@ def validate_component(arguments):
 
 
 def switch_tf_version():
-    # Use terraform 11 
+    # Use terraform 0.11
     pass
 
 
@@ -99,12 +99,15 @@ def execute(cmd, path, arguments):
     # https://github.com/hashicorp/terraform/issues/13589
     env_vars = dict(os.environ, AWS_PROFILE=arguments.project)
 
-    popen = subprocess.Popen(cmd,
-                             universal_newlines=True,
-                             cwd=path,
-                             env=env_vars)
+    process = subprocess.Popen(cmd,
+                               universal_newlines=True,
+                               cwd=path,
+                               env=env_vars)
 
-    popen.communicate()
+    process.communicate()
+
+    if process.returncode != 0:
+        sys.exit(1)
 
 
 if __name__ == '__main__':
