@@ -1,4 +1,4 @@
 variable "project" {
   type        = "string"
-  default     = "azcard"
+  default     = "your-project"
 }
