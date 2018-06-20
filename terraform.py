@@ -1,4 +1,5 @@
-"""The purpose of this script it to wrap terraform init to manage s3 keys under the Terraform remote state bucket."""
+"""The purpose of this script it to wrap terraform init to manage s3 keys under the
+    Terraform remote state bucket."""
 import argparse
 from subprocess import Popen, PIPE
 import sys
@@ -21,8 +22,8 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--action', help='The Terraform action to perform e.g. plan', required=True)
-    parser.add_argument('--project', help='The name of the project default=azcard', default='azcard')
-    parser.add_argument('--profile', help='The name of the AWS profile default=azcard', default='azcard')
+    parser.add_argument('--project', help='The name of the project default=<your_project_name>', default='<your_project_name>')
+    parser.add_argument('--profile', help='The name of the AWS profile default=default', default='default')
     parser.add_argument('--region', help='The aws region default=eu-west-2', default='eu-west-2')
     parser.add_argument('--environment', help='The aws environment e.g. test', required=True)
     parser.add_argument('--component', help='The terraform component to name the tf state file by', required=True)
